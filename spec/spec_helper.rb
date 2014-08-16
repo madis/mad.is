@@ -9,6 +9,7 @@ RSpec.configure do |config|
 
   config.filter_run :focus
   config.run_all_when_everything_filtered = true
+  config.use_transactional_fixtures = true
 
   if config.files_to_run.one?
     # Use the documentation formatter for detailed output,
@@ -56,5 +57,4 @@ RSpec.configure do |config|
     # a real object. This is generally recommended.
     mocks.verify_partial_doubles = true
   end
-
 end
