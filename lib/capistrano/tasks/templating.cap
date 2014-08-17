@@ -1,0 +1,5 @@
+def from_template(file)
+  require 'erb'
+  template = File.read(File.join(File.dirname(__FILE__), "../templates", file))
+  result = ERB.new(template).result(binding)
+end

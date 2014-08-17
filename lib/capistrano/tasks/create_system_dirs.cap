@@ -1,0 +1,11 @@
+namespace :deploy do
+  desc 'Create necessary system directories'
+  task :create_system_dirs do
+    on roles(:web) do
+      as :root do
+        execute :mkdir, "-p /etc/nginx/sites-enabled/"
+      end
+    end
+  end
+  after :setup, :create_system_dirs
+end

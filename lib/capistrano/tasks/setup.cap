@@ -1,0 +1,11 @@
+require 'colorize'
+
+namespace :deploy do
+
+  desc 'Setup system'
+  task :setup do
+    # Hook setup tasks to this task
+    invoke "deploy:check:make_linked_dirs"
+    puts "Edit the config files in #{shared_path}.".red
+  end
+end

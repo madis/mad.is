@@ -1,0 +1,16 @@
+namespace :deploy do
+  desc 'Create unicorn configuration'
+  task :setup_unicorn do
+    on roles(:web) do
+      unicorn_init = from_template "unicorn_upstart.erb"
+      unicorn_config = from_template "unicorn.rb.erb"
+      upload! StringIO.new(unicorn_config), "#{shared_path}/config/unicorn.rb"
+      upload! StringIO.new(unicorn_init), "#{shared_path}/config/unicorn_#{fetch(:application)}"
+      as :root do
+        execute :ln, "-nfs #{shared_path}/config/unicorn_#{fetch(:application)} /etc/init.d/unicorn_#{fetch(:application)}"
+        execute :chmod, "775 /etc/init.d/unicorn_#{fetch(:application)}"
+      end
+    end
+  end
+  after :setup, :setup_unicorn
+end
