@@ -11,6 +11,9 @@ gem 'bootstrap-sass'
 gem 'jquery-rails'
 gem 'slim'
 
+gem 'redcarpet'
+gem 'rouge'
+
 group :development, :test do
   gem 'rspec', '~> 3.0'
   gem 'rspec-rails', '~> 3.0.0'
