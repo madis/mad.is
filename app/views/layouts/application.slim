@@ -1,10 +1,11 @@
 doctype html
 html
   head
-    title= @title
+    title= "mad.is - tech blog"
     = stylesheet_link_tag    "application", media: "all"
     = javascript_include_tag "application"
     = csrf_meta_tags
+    if
   body
     / = yield
     /! Navigation
@@ -45,3 +46,4 @@ html
         .row
           .col-lg-12
             p Copyright &copy; Madis Nõmme 2014
+    = render 'shared/ga'
