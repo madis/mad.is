@@ -20,6 +20,11 @@ class RendersMarkdown
         class_names = link_options[:classes]
         image_tag(url, title: title, alt: alt_text, class: class_names)
       end
+
+      def header(text, header_level)
+        puts "tuli header #{text} #{header_level}"
+        "<h1>#{text}</h1>"
+      end
     end
 
   attr_reader :markdown
@@ -33,16 +38,7 @@ class RendersMarkdown
   end
 
   def call
-    render
-  end
-
-  private
-
-  def markdown_renderer
-    Redcarpet::Markdown.new(Renderer, autolink: true, tables: true, fenced_code_blocks: true)
-  end
-
-  def render
-    markdown_renderer.render(markdown)
+    options = {autolink: true, tables: true, fenced_code_blocks: true}
+    Redcarpet::Markdown.new(Renderer, options).render(@markdown)
   end
 end

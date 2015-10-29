@@ -3,7 +3,7 @@
 
 A website for blogging, implemented using Rails.
 
-Features:
+## Features:
 
   - posts can be written in different markup styles
   - syntax highlighting

@@ -8,7 +8,7 @@ p
   span.glyphicon.glyphicon-time= post.updated_at
   hr
     p
-      == RendersMarkdown.call post.content
+      == RendersMarkdown.call(post.content)
     a.btn.btn-primary href="#"
       | Read More
       span.glyphicon.glyphicon-chevron-right
