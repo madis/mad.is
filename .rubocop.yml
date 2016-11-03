@@ -19,4 +19,4 @@ Style/FrozenStringLiteralComment:
 
 AllCops:
   Exclude:
-    - 'db/schema.rb'
+    - 'db/**/*'
