@@ -1,0 +1,13 @@
+dependencies:
+  pre:
+    - gem install bundler
+
+test:
+  post:
+    - bundle exec rubocop
+
+deployment:
+  staging:
+    branch: master
+    heroku:
+      appname: mad-is-staging
