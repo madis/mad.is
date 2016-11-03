@@ -1,6 +1,0 @@
-task :load_path do
-  on roles(:all) do
-    SSHKit.config.default_env = { path: fetch(:custom_path, "$PATH") }
-  end
-end
-after "deploy:starting", :load_path

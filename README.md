@@ -1,21 +1,24 @@
-[mad.is](https://mad.is/)
-=========================
+# README
 
-A website for blogging, implemented using Rails.
+This README would normally document whatever steps are necessary to get the
+application up and running.
 
-## Features:
+Things you may want to cover:
 
-  - posts can be written in different markup styles
-  - syntax highlighting
-  - activity feeds
-  - JSON API for publishing posts
+* Ruby version
 
-```ruby
-class WhoIsYourDaddy < Struct.new(:daddy_do)
-  def what_does_he_do?
-    daddy_do
-  end
-end
-```
+* System dependencies
 
-![Yactocat](small-image|https://octodex.github.com/images/yaktocat.png)
+* Configuration
+
+* Database creation
+
+* Database initialization
+
+* How to run the test suite
+
+* Services (job queues, cache servers, search engines, etc.)
+
+* Deployment instructions
+
+* ...
