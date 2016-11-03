@@ -2,10 +2,6 @@ dependencies:
   pre:
     - gem install bundler
 
-test:
-  post:
-    - bundle exec rubocop
-
 deployment:
   staging:
     branch: master
