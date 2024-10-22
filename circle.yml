@@ -1,9 +1,0 @@
-dependencies:
-  pre:
-    - gem install bundler
-
-deployment:
-  staging:
-    branch: master
-    heroku:
-      appname: mad-is-staging
