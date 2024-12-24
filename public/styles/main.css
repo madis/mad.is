@@ -1,0 +1,7 @@
+.navbar-item {
+  img {
+    height: 5rem;
+    width: 5rem;
+    --bulma-navbar-item-img-max-height: 5rem;
+  }
+}
