@@ -34,12 +34,22 @@
          [:i.fa.fa-search]]]]
       (navbar-items menu-selection)]]]])
 
+(def google-analytics-init
+  (str/join
+    ["window.dataLayer = window.dataLayer || [];"
+     "function gtag(){dataLayer.push(arguments);}"
+     "gtag('js', new Date());"
+     "gtag('config', 'G-0K088F0CZX');"]))
+
 (defn layout
   [{:keys [menu-selection metadata title]} body-content]
   (let [title (get metadata :title title)
         final-title (if title (str title " | mad.is") "mad.is")]
     [:html
      [:head
+      [:script {:async true :src "https://www.googletagmanager.com/gtag/js?id=G-0K088F0CZX"}]
+      [:script google-analytics-init]
+
       [:meta {:charset "utf-8"}]
       [:meta {:name "viewport" :content "width=device-width, initial-scale=1"}]
       [:title final-title]
