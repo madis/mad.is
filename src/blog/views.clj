@@ -91,4 +91,5 @@
      [:figure.image.mx-auto.is-square
       [:img {:src "/images/circular-profile.webp"}]]]]
    [:h1.title.is-2.has-text-centered "Madis Nõmme"]
+   [:a {:href "mailto:services@mad.is"} [:h4.title.is-4.has-text-centered "services@mad.is"]]
    (entity-content model)])
