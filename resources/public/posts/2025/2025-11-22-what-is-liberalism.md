@@ -5,9 +5,13 @@ tags: [liberalism, philosophy]
 ---
 # Liberalism
 
-![Image of things](/assets/world-map.webp)
+<p align="center">
+![Alberto Benegas Lynch jr](/assets/alberto-benegas-lynch.png)
+</p>
 
-## Qué es el liberalismo?
+One of the best definitions of liberalism I've found is the one from Alberto Benegas Lynch jr.
+
+## ¿Qué es el liberalismo?
 
 El liberalismo es el respeto irrestricto del proyecto de vida del prójimo, basado en el principio de no agresión y en defensa del derecho a la vida, a la libertad y a la propiedad.
 
