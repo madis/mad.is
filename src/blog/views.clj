@@ -48,7 +48,7 @@
     [:html
      [:head
       [:script {:async true :src "https://www.googletagmanager.com/gtag/js?id=G-0K088F0CZX"}]
-      [:script google-analytics-init]
+      [:script (hiccup2.core/raw google-analytics-init)]
 
       [:meta {:charset "utf-8"}]
       [:meta {:name "viewport" :content "width=device-width, initial-scale=1"}]
