@@ -1,5 +1,6 @@
 ---
 last-updated: 2025-11-24
+title: Madis Nõmme
 ---
 
 ## Overview

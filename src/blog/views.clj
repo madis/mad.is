@@ -1,6 +1,7 @@
 (ns blog.views
   (:require
     [clojure.string :as str]
+    [cheshire.core :as json]
     [hiccup2.core]))
 
 (defn navbar-items
@@ -41,6 +42,22 @@
      "gtag('js', new Date());"
      "gtag('config', 'G-0K088F0CZX');"]))
 
+(def ld-json
+  (json/generate-string
+    {"@context" "https://schema.org"
+     "@type" "Person"
+     "name" "Madis Nõmme"
+     "jobTitle" "Software developer, consultant and speaker"
+     "url" "https://mad.is"
+     "image" "https://mad.is/images/circular-profile.webp"
+     "sameAs" [
+       "http://x.com/madisIT"
+       "http://github.com/madis"
+     ]
+     "email" "me@mad.is"
+     "description" "Madis Nõmme is an experienced back-end developer specializing in Clojure(Script), Ruby, Bitcoin & Lightning development"}
+    {:pretty true}))
+
 (defn layout
   [{:keys [menu-selection metadata title]} body-content]
   (let [title (get metadata :title title)
@@ -52,9 +69,15 @@
 
       [:meta {:charset "utf-8"}]
       [:meta {:name "viewport" :content "width=device-width, initial-scale=1"}]
+      [:meta {:name "description" :content "Madis Nõmme - software developer and researcher. Learn how to technology can bring us more freedom and prosperity"}]
+      [:link {:rel "icon" :href "/web-icons/favicon.ico" :sizes "any"}]
+      [:link {:rel "icon" :href "/web-icons/icon.svg" :type "image/svg+xml"}]
+      [:link {:rel "apple-touch-icon" :href "/web-icons/apple-touch-icon.png"}]
+      [:link {:rel "manifest" :href "/web-icons/manifest.webmanifest"}]
       [:title final-title]
       [:link {:rel "stylesheet" :href "https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css"}]
       [:link {:rel "stylesheet" :href "/css/style.css"}]
+      [:script {:type "application/ld+json"} (hiccup2.core/raw ld-json)]
       [:script {:type :module
                 :src "https://cdn.jsdelivr.net/gh/starfederation/datastar@v1.0.0-RC.6/bundles/datastar.js"}]
       [:script {:src "https://kit.fontawesome.com/cb70718952.js" :crossorigin "anonymous"}]]
@@ -97,9 +120,9 @@
   [model]
   [:div
    [:div.columns.is-centered.is-mobile
-    [:div.column.is-one-fifth-desktop.is-half-mobile
+    [:div.column {:class [:is-one-fifth-desktop :is-half-mobile :is-one-third-tablet]}
      [:figure.image.mx-auto.is-square
-      [:img {:src "/images/circular-profile.webp"}]]]]
+      [:img {:src "/images/circular-profile.webp" :alt "Madis Nõmme"}]]]]
    [:h1.title.is-2.has-text-centered "Madis Nõmme"]
    [:a {:href "mailto:services@mad.is"} [:h4.title.is-4.has-text-centered "services@mad.is"]]
    (entity-content model)])

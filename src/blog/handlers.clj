@@ -10,7 +10,7 @@
 
 (defn- render-html
   [hiccup]
-  (-> hiccup (h/html ,,,) (str ,,,)))
+  (-> (h/html (hiccup2.core/raw "<!DOCTYPE html>\n") hiccup) str))
 
 (defn- response-ok
   [body]
@@ -20,7 +20,7 @@
   [req]
   (let [posts (get-post-list)
         projects (get-project-list)
-        model {:title "Home"
+        model {:title "Madis Nõmme - Home"
                :posts posts
                :projects projects
                :menu-selection :home}]
@@ -43,9 +43,11 @@
 
 (defn about
   [req]
-  (let [model {:title "About"
+  (let [about (prepare-entity-content "about" "madis-bio")
+        _ (println ">>> ABOUT" (keys about))
+        model {:metadata (:metadata about)
                :menu-selection :about
-               :content (:html (prepare-entity-content "about" "madis-bio"))}]
+               :content (:html about)}]
     (response-ok (-> model views/show-about ((partial layout model) ,,,) render-html))))
 
 (defn show-project
