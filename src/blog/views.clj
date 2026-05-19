@@ -59,7 +59,7 @@
     {:pretty true}))
 
 (defn layout
-  [{:keys [menu-selection metadata title]} body-content]
+  [{:keys [menu-selection metadata title extra-head-tags extra-body-tags]} body-content]
   (let [title (get metadata :title title)
         final-title (if title (str title " | mad.is") "mad.is")]
     [:html
@@ -80,14 +80,16 @@
       [:script {:type "application/ld+json"} (hiccup2.core/raw ld-json)]
       [:script {:type :module
                 :src "https://cdn.jsdelivr.net/gh/starfederation/datastar@v1.0.0-RC.6/bundles/datastar.js"}]
-      [:script {:src "https://kit.fontawesome.com/cb70718952.js" :crossorigin "anonymous"}]]
+      [:script {:src "https://kit.fontawesome.com/cb70718952.js" :crossorigin "anonymous"}]
+      (seq extra-head-tags)]
      [:body
       (navbar menu-selection)
       [:div.section
        [:div.container
         [:div.columns.is-desktop
          [:div.column.is-10.is-offset-1
-          body-content]]]]]]))
+          body-content]]]]
+      (seq extra-body-tags)]]))
 
 (defn post-summary
   [post]
@@ -104,7 +106,7 @@
 
 (defn entity-list
   [model]
-  (map post-summary (take 2 (:entities model))))
+  (map post-summary (take 3 (:entities model))))
 
 (defn show-landing
   [model]
