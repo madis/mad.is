@@ -17,7 +17,16 @@
              (-> (Runtime/getRuntime)
                  (.addShutdownHook
                   (Thread. (fn [] (fs/delete ".nrepl-port")))))
-             (deref (promise)))}}
+             (deref (promise)))}
+  publish
+  {:doc "Publish to mad.is"
+   :task (do
+           (shell "rsync -a . mad.is:~/www/mad.is"))}
+
+  server
+  {:doc "Starts http-kit server on port 3001"
+   :requires ([blog.main])
+   :task (blog.main/start!)}}
  :profiles
  {:defalut
   {:init
