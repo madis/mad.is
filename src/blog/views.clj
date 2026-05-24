@@ -106,7 +106,7 @@
 
 (defn entity-list
   [model]
-  (map post-summary (take 3 (:entities model))))
+  (map post-summary (:entities model)))
 
 (defn show-landing
   [model]

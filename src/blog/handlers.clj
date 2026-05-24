@@ -18,8 +18,8 @@
 
 (defn home
   [req]
-  (let [posts (get-post-list)
-        projects (get-project-list)
+  (let [posts (take 3 (get-post-list))
+        projects (take 3 (get-project-list))
         model {:title "Madis Nõmme - Home"
                :posts posts
                :projects projects
@@ -44,7 +44,6 @@
 (defn about
   [req]
   (let [about (prepare-entity-content "about" "madis-bio")
-        _ (println ">>> ABOUT" (keys about))
         model {:metadata (:metadata about)
                :menu-selection :about
                :content (:html about)}]

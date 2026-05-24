@@ -1,3 +1,4 @@
 .nrepl-port
 .lsp
 Session.vim
+.clojure-mcp
