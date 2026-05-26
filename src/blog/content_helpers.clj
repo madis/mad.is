@@ -42,7 +42,7 @@
 (defn get-post-list
   []
   (let [file-list (fs/glob (root-path) "posts/*/*.md")]
-    (map get-post-info file-list)))
+    (sort-by :published-at #(compare %2 %1) (map get-post-info file-list))))
 
 (defn get-project-list
   []
