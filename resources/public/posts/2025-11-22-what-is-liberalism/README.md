@@ -6,7 +6,7 @@ tags: [liberalism, philosophy]
 # Liberalism
 
 <p align="center">
-![Alberto Benegas Lynch jr](/assets/alberto-benegas-lynch.png)
+![Alberto Benegas Lynch jr](alberto-benegas-lynch.png)
 </p>
 
 One of the best definitions of liberalism I've found is the one from Alberto Benegas Lynch jr.

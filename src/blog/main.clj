@@ -10,13 +10,21 @@
 (def routes
   {"GET /" handlers/home
    "GET /posts" handlers/list-posts
+   "GET /posts/*" handlers/show-post
    "GET /projects" handlers/list-projects
    "GET /projects/*" handlers/show-project
-   "GET /about" handlers/about
-   "GET /posts/*" handlers/show-post
-   "GET /assets/*" handlers/serve-assets})
+   "GET /about" handlers/show-about})
 
 (defonce server-instance (atom nil))
+
+(defn wrap-error-response
+  [handler]
+  (fn [req]
+    (try (handler req)
+         (catch Exception ex
+           {:status 500
+            :headers {"Content-Type" "text/plain"}
+            :body (str "Oops, something went wrong\n" (.getMessage ex))}))))
 
 (defn start!
   [& [{:keys [port] :or {port 3001}}]]
@@ -27,7 +35,8 @@
               (-> handler
                   (resource/wrap-resource ,,, "public" {:prefer-handler? false})
                   (content-type/wrap-content-type ,,, )
-                  (logger/wrap-with-logger ,,,))
+                  (logger/wrap-with-logger ,,,)
+                  wrap-error-response)
               {:port port :join false :legacy-return-value? false}))))
 
 (defn stop!

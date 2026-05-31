@@ -3,72 +3,82 @@
     [markdown.core :as md]
     [babashka.fs :as fs]
     [clojure.string :as str]
-    [clojure.java.io :as io])
+    [clojure.java.io :as io]
+    [ring.util.mime-type :as mime-type]
+    [blog.external :as be])
   (:import
     [java.time LocalDate]))
 
-(defn- remove-file-extension
-  [path]
-  (str/replace path #"\.[^.]+$" ""))
-
-(defn- root-path
+(defn root-path
   []
   (-> (io/resource "public")))
 
-(defn get-post-info
-  [path]
-  (let [post-meta (md/md-to-meta (slurp (str path)))
-        file-name (fs/file-name path)
-        [year month date] (->> (re-find #"^\d{4}-\d{2}-\d{2}" file-name)
-                               (re-seq #"\d+")
-                               (map #(Integer/parseInt %)))
-        additional-fields {:type :post
-                           :year year
+(defn extract-publication-date
+  [p]
+  (let [pattern #"(?i)(\d{4})(?:[-/_](\d{1,2}))?(?:[-/_](\d{1,2}))?"
+        match   (re-find pattern (:file-name p))]
+      (when match
+        (let [[_ year month day] match]
+          [(when year (Integer/parseInt year))
+           (when month (Integer/parseInt month))
+           (when day (Integer/parseInt day))]))))
+
+(defn get-publication-info
+  [p]
+  (let [p-meta (md/md-to-meta (:content p))
+        [year month date] (extract-publication-date p)
+        additional-fields {:year year
                            :month month
-                           :published-at (LocalDate/of year month date)
-                           :href (str "/posts/" (remove-file-extension file-name))}]
-    (merge post-meta additional-fields)))
+                           :published-at (if (every? int? [year month date])
+                                           (LocalDate/of year month date)
+                                           (:created-at p))
+                           :href (str (:path p) "/")}]
+    (merge p-meta additional-fields)))
 
-(defn get-project-info
-  [path]
-  (let [project-meta (md/md-to-meta (slurp (str path)))
-        file-name (fs/file-name path)
-        id (->> (re-find #"^\d+" file-name) (Integer/parseInt ,,,))
-        additional-fields {:type :project
-                           :id id
-                           :href (str "/projects/" (remove-file-extension file-name))}]
-    (merge project-meta additional-fields)))
+(defn get-posts
+  ([] (get-posts {}))
+  ([{:keys [list-md-files] :or {list-md-files (partial be/list-md-files "posts")}}]
+   (->> (list-md-files)
+        (map (fn [p] (assoc p :info (get-publication-info p))) ,,,)
+        (sort-by :published-at #(compare %2 %1) ,,,))))
 
-(defn get-post-list
-  []
-  (let [file-list (fs/glob (root-path) "posts/*/*.md")]
-    (sort-by :published-at #(compare %2 %1) (map get-post-info file-list))))
+(defn get-projects
+  ([] (get-projects {}))
+  ([{:keys [list-md-files] :or {list-md-files (partial be/list-md-files "projects")}}]
+   (->> (list-md-files)
+        (map (fn [p] (assoc p :info (get-publication-info p))) ,,,)
+        (sort-by :published-at #(compare %2 %1) ,,,))))
 
-(defn get-project-list
-  []
-  (let [file-list (fs/glob (root-path) "projects/*.md")]
-    (map get-project-info file-list)))
+(def allowed-groups #{"posts" "projects" "about"})
+(def supported-extensions #{"jpg" "jpeg" "png" "gif" "bmp" "webp" "tiff" "tif" "svg"})
 
-(defn entity-root-path
-  [group entity-id]
-  (case group
-    "posts" (str (root-path) "/" group "/" (subs entity-id 0 4) "/" entity-id)
-    "projects" (str (root-path) "/" group "/" entity-id)
-    "about" (str (root-path) "/" group "/" entity-id)))
+(defn publication-data
+  [uri]
+  (let [file-contents (be/get-md-file uri)
+        {:keys [metadata html]} (md/md-to-html-string-with-meta file-contents)]
+    {:title (:title metadata)
+     :published-at "2026 was the year and May was the month"
+     :content html}))
 
-(defn prepare-entity-content
-  [group entity-id]
-  (let [file-path (str (entity-root-path group entity-id) ".md")
-        file-contents (slurp file-path)]
-    (md/md-to-html-string-with-meta file-contents)))
+(defn asset-request?
+  [uri]
+  (let [[_ group _ asset] (str/split uri #"/")
+        extension (when asset
+                    (-> asset
+                        str/lower-case
+                        (str/split #"\." -1)
+                        last))]
+    (and
+      (not (nil? extension))
+      (contains? allowed-groups group)
+      (contains? supported-extensions extension))))
 
-(comment
-  (get-project-list)
-  (fs/glob (io/resource "public") "posts/*/*.md")
-  (str/replace "hello.world.md" #"\.[^.]+$" "")
-  (def files (fs/glob (-> *file* fs/absolutize fs/parent fs/parent fs/parent) "posts/*/*.md"))
-  (fs/file-name (first files))
-  (get-post-list)
-  (java.time.LocalDate/parse "2025-10-11")
-  ((slurp "/home/madis/temp/learning-babashka/mad.is/posts/2025/2025-11-23-the-future-is-here.md"))
-  (get-post-info "/home/madis/temp/learning-babashka/mad.is/posts/2025/2025-11-23-the-future-is-here.md"))
+(defn asset-response
+  ([path] (asset-response path (root-path)))
+  ([path root-path]
+   (let [full-path (str root-path path)
+         content-type (mime-type/ext-mime-type path)
+         headers {"Content-Type" content-type "Cache-Control" "public, max-age=31536000"}]
+     (if (fs/exists? full-path)
+       {:status 200 :body (io/input-stream full-path) :headers headers}
+       {:status 400 :body ""}))))

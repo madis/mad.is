@@ -9,7 +9,7 @@
   (let [items [{:id :home :href "/"}
                {:id :posts :href "/posts"}
                {:id :projects :href "/projects"}
-               {:id :about :href "/about"}]
+               {:id :about :href "/about/"}]
         new-menu-item (fn [i] [:a.navbar-item.is-size-5.has-text-weight-semibold
                                {:href (:href i)
                                 :class (when (= menu-selection (:id i)) [:is-active])}
@@ -28,11 +28,6 @@
       [:span] [:span] [:span]]]
     [:div.navbar-menu {:data-class:is-active "$navbar-open"}
      [:div.navbar-end
-      #_[:div.navbar-item
-       [:div.control.has-icons-left
-        [:input.input.is-rounded {:type "email" :placeholder "Search"}]
-        [:span.icon.is-left
-         [:i.fa.fa-search]]]]
       (navbar-items menu-selection)]]]])
 
 (def google-analytics-init
@@ -59,9 +54,8 @@
     {:pretty true}))
 
 (defn layout
-  [{:keys [menu-selection metadata title extra-head-tags extra-body-tags]} body-content]
-  (let [title (get metadata :title title)
-        final-title (if title (str title " | mad.is") "mad.is")]
+  [{:keys [menu-selection title extra-head-tags extra-body-tags]} body-content]
+  (let [final-title (if title (str title " | mad.is") "mad.is")]
     [:html
      [:head
       [:script {:async true :src "https://www.googletagmanager.com/gtag/js?id=G-0K088F0CZX"}]
@@ -69,7 +63,7 @@
 
       [:meta {:charset "utf-8"}]
       [:meta {:name "viewport" :content "width=device-width, initial-scale=1"}]
-      [:meta {:name "description" :content "Madis Nõmme - software developer and researcher. Learn how to technology can bring us more freedom and prosperity"}]
+      [:meta {:name "description" :content "Madis Nõmme - software developer and researcher. Learn how technology can bring us more freedom and prosperity"}]
       [:link {:rel "icon" :href "/web-icons/favicon.ico" :sizes "any"}]
       [:link {:rel "icon" :href "/web-icons/icon.svg" :type "image/svg+xml"}]
       [:link {:rel "apple-touch-icon" :href "/web-icons/apple-touch-icon.png"}]
@@ -95,28 +89,28 @@
   [post]
   [:div.box
    [:div.content.is-medium
-    [:h2.subtitle.is-4 (:published-at post)]
     [:a {:href (:href post)}
      [:h1.title (:title post)]]
-    [:p (:description post)]]])
+    [:p (:description post)]]
+   [:p.is-size-6.has-text-right.has-text-grey-light (:published-at post)]])
 
 (defn entity-content
   [model]
-  [:div.content (hiccup2.core/raw (:content model))])
+  [:div.content.is-medium (hiccup2.core/raw (:content model))])
 
 (defn entity-list
   [model]
-  (map post-summary (:entities model)))
+  (map post-summary (map :info (:publications model))))
 
 (defn show-landing
   [model]
   [:div
    [:div.mb-4
     [:h1.title.is-3 "Latest posts"]
-    (entity-list {:entities (:posts model)})]
+    (entity-list {:publications (:posts model)})]
    [:div.mb-4
     [:h1.title.is-3 "Projects"]
-    (entity-list {:entities (:projects model)})]])
+    (entity-list {:publications (:projects model)})]])
 
 (defn show-about
   [model]

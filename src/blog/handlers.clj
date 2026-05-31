@@ -1,12 +1,8 @@
 (ns blog.handlers
   (:require
-    [hiccup2.core :as h]
-    [clojure.java.io :as io]
-    [blog.content-helpers :as ch :refer [prepare-entity-content get-post-list get-project-list]]
-    [ring.util.mime-type :as mime-type]
-    [lambdaisland.uri :refer [uri]]
-    [clojure.string :as str]
-    [blog.views :as views :refer [layout]]))
+   [blog.content-helpers :as ch :refer [get-posts get-projects publication-data]]
+   [blog.views :as views :refer [layout]]
+   [hiccup2.core :as h]))
 
 (defn- render-html
   [hiccup]
@@ -18,8 +14,8 @@
 
 (defn home
   [req]
-  (let [posts (take 3 (get-post-list))
-        projects (take 3 (get-project-list))
+  (let [posts (take 3 (get-posts))
+        projects (take 3 (get-projects))
         model {:title "Madis Nõmme - Home"
                :posts posts
                :projects projects
@@ -30,50 +26,26 @@
   [req]
   (let [model {:title "Posts"
                :menu-selection :posts
-               :entities (get-post-list)}]
+               :publications (get-posts)}]
     (response-ok (-> model views/entity-list ((partial layout model) ,,,) render-html))))
 
 (defn list-projects
   [req]
-  (let [projects (get-project-list)
-        model {:title "Projects"
+  (let [model {:title "Projects"
                :menu-selection :projects
-               :entities projects}]
+               :publications (get-projects)}]
     (response-ok (-> model views/entity-list ((partial layout model) ,,,) render-html))))
 
-(defn about
-  [req]
-  (let [about (prepare-entity-content "about" "madis-bio")
-        model {:metadata (:metadata about)
-               :menu-selection :about
-               :content (:html about)}]
-    (response-ok (-> model views/show-about ((partial layout model) ,,,) render-html))))
+(defn make-show-handler
+  [menu-selection view-fn]
+  (fn [req]
+    (if (ch/asset-request? (:uri req))
+      (ch/asset-response (:uri req))
+      (let [publication (publication-data (:uri req))
+            layout-model {:title (:title publication) :menu-selection menu-selection}
+            view-model (select-keys publication [:content :published-at])]
+        (response-ok (render-html (layout layout-model (view-fn view-model))))))))
 
-(defn show-project
-  [req]
-  (let [post-id (-> req :path-params first)
-        post (prepare-entity-content "projects" post-id)
-        model {:menu-selection :projects
-               :metadata (:metadata post)
-               :content (:html post)}]
-    (response-ok (-> model views/entity-content ((partial layout model) ,,,) render-html))))
-
-(defn show-post
-  [req]
-  (let [post-id (-> req :path-params first)
-        post (prepare-entity-content "posts" post-id)
-        model {:menu-selection :posts
-               :metadata (:metadata post)
-               :content (:html post)}]
-    (response-ok (-> model views/entity-content ((partial layout model) ,,,) render-html))))
-
-(defn serve-assets
-  [req]
-  (let [[_ group entity-id] (str/split (:path (uri (get-in req [:headers "referer"]))) #"/")
-        asset-filename (last (str/split (:path (uri (get req :uri))) #"/assets/"))
-        full-path (str (ch/entity-root-path group entity-id) "/" asset-filename)
-        content-type (mime-type/ext-mime-type asset-filename)]
-    {:status 200
-     :body (io/input-stream full-path)
-     :headers {"Content-Type" content-type
-               "Cache-Control" "public, max-age=31536000"}}))
+(def show-project (make-show-handler :projects views/entity-content))
+(def show-post (make-show-handler :posts views/entity-content))
+(def show-about (make-show-handler :about views/show-about))
