@@ -55,6 +55,7 @@
   ([{:keys [list-md-files] :or {list-md-files (partial be/list-md-files "posts")}}]
    (->> (list-md-files)
         (map (fn [p] (assoc p :info (get-publication-info p))) ,,,)
+        (filter (fn [p] (not (get-in p [:info :draft]))) ,,,)
         (sort-by #(get-in % [:info :published-at]) #(compare %2 %1) ,,,))))
 
 (defn get-projects
