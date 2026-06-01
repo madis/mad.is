@@ -30,3 +30,7 @@
     (is (instance? java.io.InputStream (:body response)))
     (is (< 10 (.available (:body response)))))
   (is (= 400 (:status (ch/asset-response "/posts/2026-05-30-test/none.png")))))
+
+(deftest string->local-date
+  (is (= (LocalDate/of 2025 11 22) (ch/string->local-date "posts/2025-11-22-what-is-liberalism")))
+  (is (= (LocalDate/of 2025 11 22) (ch/string->local-date "2025-11-22"))))

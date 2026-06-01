@@ -1,10 +1,12 @@
 (ns blog.external
   (:require
    [babashka.fs :as fs]
-   [clojure.string :as str]
-   [clojure.java.io :as io])
+   [clojure.java.io :as io]
+   [clojure.string :as str])
   (:import
-   [java.time ZoneId ZonedDateTime]))
+   [java.nio.file.attribute FileTime]
+   [java.time ZoneId ZonedDateTime]
+   [java.time.format DateTimeFormatter]))
 
 (defn root-path
   []
@@ -15,6 +17,16 @@
   (-> (.toInstant ft)
       (ZonedDateTime/ofInstant (ZoneId/systemDefault))
       (.toLocalDate)))
+
+(defn- filetime->yyyy-mm-dd
+  "Converts FileTime to YYYY-MM-DD string (local date)"
+  [^FileTime ft]
+  (when ft
+    (-> ft
+        .toInstant
+        (.atZone (ZoneId/systemDefault))   ; or (ZoneId/of "UTC")
+        .toLocalDate
+        (.format DateTimeFormatter/ISO_LOCAL_DATE))))
 
 (defn remove-default-file-suffix
   [path]
@@ -31,7 +43,7 @@
          (map (fn [p]
                {:file-name (fs/file-name p)
                 :path (remove-default-file-suffix (fs/relativize root-path p))
-                :created-at (file-time->local-date (fs/creation-time p))
+                :created-at (filetime->yyyy-mm-dd (fs/creation-time p))
                 :content (slurp (str p))}))
         (sort-by :created-at #(compare %2 %1) ,,,))))
 
@@ -46,4 +58,6 @@
                      (if (fs/exists? contents-readme)
                        contents-readme
                        (throw (ex-info (str "No content found: " contents-readme) {:uri uri}))))]
-    (slurp final-path)))
+    {:path final-path
+     :created-at (filetime->yyyy-mm-dd (fs/creation-time final-path))
+     :content (slurp final-path)}))

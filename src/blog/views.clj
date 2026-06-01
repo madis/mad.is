@@ -96,7 +96,9 @@
 
 (defn entity-content
   [model]
-  [:div.content.is-medium (hiccup2.core/raw (:content model))])
+  [:div.content.is-medium
+   (hiccup2.core/raw (:content model))
+   [:p.is-size-6.has-text-right.has-text-grey-light (:published-at model)]])
 
 (defn entity-list
   [model]
