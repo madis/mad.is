@@ -45,7 +45,7 @@
 (defn get-publication-info
   [p]
   (let [p-meta (md/md-to-meta (:content p))
-        published-at-candidates (remove nil? [(:path p) (:created-at p) (date->yyyy-mm-dd (:publish-at p-meta))])
+        published-at-candidates (remove nil? [(:path p) (date->yyyy-mm-dd (:publish-at p-meta))])
         additional-fields {:published-at (calculate-published-at published-at-candidates)
                            :href (str (:path p) "/")}]
     (merge p-meta additional-fields)))
