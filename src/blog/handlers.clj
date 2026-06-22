@@ -24,9 +24,10 @@
 
 (defn list-posts
   [req]
-  (let [model {:title "Posts"
+  (let [include-drafts? (parse-boolean (get-in req [:query-params "drafts"] "false"))
+        model {:title "Posts"
                :menu-selection :posts
-               :publications (get-posts)}]
+               :publications (get-posts {:include-drafts? include-drafts?})}]
     (response-ok (-> model views/entity-list ((partial layout model) ,,,) render-html))))
 
 (defn list-projects

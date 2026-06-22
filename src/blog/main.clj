@@ -1,11 +1,12 @@
 (ns blog.main
   (:require
-    [blog.handlers :as handlers]
-    [ring.middleware.resource :as resource]
-    [ring.middleware.content-type :as content-type]
-    [clj-simple-router.core :as router]
-    [org.httpkit.server :as hk-server]
-    [ring.logger :as logger]))
+   [blog.handlers :as handlers]
+   [clj-simple-router.core :as router]
+   [org.httpkit.server :as hk-server]
+   [ring.logger :as logger]
+   [ring.middleware.content-type :as content-type]
+   [ring.middleware.params]
+   [ring.middleware.resource :as resource]))
 
 (def routes
   {"GET /" handlers/home
@@ -36,6 +37,7 @@
                   (resource/wrap-resource ,,, "public" {:prefer-handler? false})
                   (content-type/wrap-content-type ,,, )
                   (logger/wrap-with-logger ,,,)
+                  (ring.middleware.params/wrap-params ,,,)
                   wrap-error-response)
               {:port port :join false :legacy-return-value? false}))))
 
